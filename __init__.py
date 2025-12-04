@@ -405,7 +405,7 @@ class Spēle:
                         print(v)
                     # print('Perp. vārds X:', v, v in self.df.values)
                     if not v in self.df.values:
-                        print('Neveido vārdu:', v)
+                        # print('Neveido vārdu:', v)
                         rezultāts = 0
                         break
 
@@ -438,7 +438,7 @@ class Spēle:
                     #     print(v)
                     # print('Perp. vārds Y:', v, v in self.df.values)
                     if not v in self.df.values:
-                        print('Neveido vārdu:', v)
+                        # print('Neveido vārdu:', v)
                         rezultāts = 0
                         break
 
@@ -478,10 +478,10 @@ class Spēle:
                 izvēles = self.pārbaudīt_vārdu(roka)
                 
                 vārdi_neder = []
-                for v in izvēles:
-                    #Pārbaudām, vai vārds ir derīgs:
-                    if not self.vai_legāls(v):
-                        vārdi_neder.append(v)
+                # for v in izvēles:
+                #     #Pārbaudām, vai vārds ir derīgs:
+                #     if not self.vai_legāls(v):
+                #         vārdi_neder.append(v)
                     
 
 
@@ -511,20 +511,20 @@ class Spēle:
                     izvēles += self.pārbaudīt_vārdu(roka, x, y, 'y')
                     # print(len(izvēles))
                 # print(len(izvēles))
-                print('Atrod nederīgus vārdus')
+                # print('Atrod nederīgus vārdus')
                 vārdi_neder = []
-                for v_pilns in izvēles:
-                    if not self.vai_legāls(v_pilns[0]):
-                        vārdi_neder.append(v_pilns[0])
+                # for v_pilns in izvēles:
+                #     if not self.vai_legāls(v_pilns[0]):
+                #         vārdi_neder.append(v_pilns[0])
 
-                    # print(v_pilns[-1])
-                    for v in v_pilns[-1]:
-                        if not self.vai_legāls(v[0]):
-                            vārdi_neder.append(v[0])
+                #     # print(v_pilns[-1])
+                #     for v in v_pilns[-1]:
+                #         if not self.vai_legāls(v[0]):
+                #             vārdi_neder.append(v[0])
 
 
 
-                print('Atjauno datubāzi')
+                # print('Atjauno datubāzi')
                 izvēles_p = []    
                 if vārdi_neder:
                     df = pd.read_csv('vārdi', index_col=0)
@@ -561,7 +561,16 @@ class Spēle:
         
         izvēles_p.sort(key=lambda x: x[1], reverse=True)
 
-        vārds_izsp = izvēles_p[0]
+        # vārds_izsp = izvēles_p[0]
+        for v_i in izvēles_p:
+            if v_i[1]==0:
+                continue
+            if self.vai_legāls(v_i[0]):
+                vārds_izsp = v_i
+                break
+        else:
+            print('Izlaists gājiens')
+            return
         print('Labākais vārds:', vārds_izsp)
         #Aprēķinām punktus un uzzīmējam vārdu:
         if vārds_izsp[-1]=='x':
