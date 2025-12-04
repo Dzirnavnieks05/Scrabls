@@ -194,6 +194,7 @@ class Spēle:
                     v = [int(self.laukums[x,i]) if i!=y else b for i in range(15)]
                     for sāk in range(y-1, -1, -1):
                         if v[sāk]==-1:
+                            sāk += 1
                             break
                     else:
                         sāk = 0 #Vārds sākas pie malas
@@ -201,7 +202,7 @@ class Spēle:
                         if v[bei]==-1:
                             break
                     else:
-                        bei = 0 #Vārds beidzas pie malas
+                        bei = 15 #Vārds beidzas pie malas
                     v = ''.join(burti_sim[i] for i in v[sāk+1:bei])
                     if v in df:
                         print(sāk, bei, v)
@@ -210,6 +211,7 @@ class Spēle:
                 ##Vai vārdu var turpināt?
                 for sāk in range(x-1, -1, -1):
                     if self.laukums[sāk,y]==-1:
+                        sāk += 1
                         break
                 else:
                     sāk = 0 #Vārds sākas pie malas
@@ -217,7 +219,7 @@ class Spēle:
                     if self.laukums[bei,y]==-1:
                         break
                 else:
-                    bei = 0 #Vārds beidzas pie malas
+                    bei = 15 #Vārds beidzas pie malas
                 # v = ''.join(
                 #     burti_sim[i] 
                 #     if i!=-1 
@@ -258,8 +260,26 @@ class Spēle:
                         # print('burti der', burti_der)
                     df_i = df_i[burti_der>=df_i['Items'].str.len()-1]
                     # pot_v.append((v, (sāk0+1, y), df_i.to_numpy()))
+
+                    # #Atrodam perpendikulāros vārdus:
+                    # vārdi_perp = []
+                    # #Pārbaudām, vai vertikāli veidojas vārds:
+                    # for i in 
+                    # v_i = vārds[i]
+                    # for j in range(y-1, -1, -1):#Pievieno izspēlētos burtus no sākuma:
+                    #     if self.laukums[x+i,j]==-1:
+                    #         break
+                    #     v = burti_sim[self.laukums[x+i,j]] + v
+                    # for j in range(y+1, 15, 1):#Pievieno izspēlētos burtus no sākuma:
+                    #     if self.laukums[x+i,j]==-1:
+                    #         break
+                    #     v += burti_sim[self.laukums[x+i,j]]
+                    # if len(v)>1:
+
+
+
                     for i in df_i['Items']:
-                        pot_v.append((i.replace('_', v), (sāk0-i.index('_'), y), 'x'))
+                        pot_v.append((i.replace('_', v), (sāk0-i.index('_'), y), 'x', vārdi_perp))
 
             if virziens=='y':                
                 ##Vai ievietojot burtu izvēlētajā vietā var veidoties derīgi vārdi horizontālā virzienā:
@@ -267,6 +287,7 @@ class Spēle:
                     v = [int(self.laukums[i,y]) if i!=x else b for i in range(15)]
                     for sāk in range(x-1, -1, -1):
                         if v[sāk]==-1:
+                            sāk += 1
                             break
                     else:
                         sāk = 0 #Vārds sākas pie malas
@@ -274,7 +295,7 @@ class Spēle:
                         if v[bei]==-1:
                             break
                     else:
-                        sāk = 0 #Vārds beidzas pie malas
+                        bei = 15 #Vārds beidzas pie malas
 
                     v = ''.join(burti_sim[i] for i in v[sāk+1:bei])
                     # print('Testējam:', sāk, bei, v)
@@ -285,6 +306,7 @@ class Spēle:
                 ##Vai vārdu var turpināt?
                 for sāk in range(y-1, -1, -1):
                     if self.laukums[x,sāk]==-1:
+                        sāk += 1
                         break
                 else:
                     sāk = 0 #Vārds sākas pie malas
@@ -292,7 +314,7 @@ class Spēle:
                     if self.laukums[x,bei]==-1:
                         break
                 else:
-                    bei = 0 #Vārds beidzas pie malas
+                    bei = 15 #Vārds beidzas pie malas
                 # print(self.laukums[sāk+1:bei,y])
                 sāk0 = None
                 v = ''
@@ -325,9 +347,33 @@ class Spēle:
                         if i!='_':
                             burti_der += (df_i['Items'].str.count(i) <= v_roka.count(i)) * df_i['Items'].str.count(i)
                     df_i = df_i[burti_der>=df_i['Items'].str.len()-1]
-                    # pot_v.append((v, (x, sāk0), df_i.to_numpy()))
+
+                    #Atrodam perpendikulāros vārdus:
+                    vārdi_perp = []
+                    for v_i in df_i['Items']:
+                        #Vārda sākuma koordinātas: (x, y_i)
+                        y_i = sāk0-v_i.index('_') 
+                        v_i = v_i.replace('_', v)
+                        for b_i in range(len(v_i)):
+                            if self.laukums[x,y_i+b_i] !=-1:#Ja burts jau ir aizņemts, jauns vārds netiek veidots:
+                                continue
+
+                            v_p = v_i[b_i]
+                            for j in range(x-1, -1, -1):#Pievieno izspēlētos burtus no sākuma:
+                                if self.laukums[j,y_i+b_i]==-1:
+                                    break
+                                v_p = burti_sim[self.laukums[j,y_i+b_i]] + v_p
+                            for j in range(x+1, 15, 1):#Pievieno izspēlētos burtus no sākuma:
+                                if self.laukums[j,y_i+b_i]==-1:
+                                    break
+                                v_p += burti_sim[self.laukums[j,y_i+b_i]]
+                            if len(v_p)>1:
+                                # print(v_p, (x, y_i+b_i))
+                                vārdi_perp.append((v_p, (x, y_i+b_i)))
+
+
                     for i in df_i['Items']:
-                        pot_v.append((i.replace('_', v), (x, sāk0-i.index('_')), 'y'))
+                        pot_v.append((i.replace('_', v), (x, sāk0-i.index('_')), 'y', vārdi_perp))
             return pot_v
 
     def pārbaudīt_punktus(self, vārds, x, y, virziens='x'):
@@ -335,6 +381,7 @@ class Spēle:
         rezultāts = 0
         v_reiz = 1
         bonusi = [] #Izlietotie bonusi.
+        # print('Vārds pārbaudei:', vārds)
         if virziens=='x':
             for i in range(len(vārds)):
                 #Burti nesakrīt
@@ -343,6 +390,25 @@ class Spēle:
                 if (self.laukums[x+i, y]!=-1) and (burti_sim[self.laukums[x+i, y]]!=vārds[i]):
                     rezultāts = 0
                     break
+                #Pārbaudām, vai vertikāli veidojas vārds:
+                v = vārds[i]
+                for j in range(y-1, -1, -1):#Pievieno izspēlētos burtus no sākuma:
+                    if self.laukums[x+i,j]==-1:
+                        break
+                    v = burti_sim[self.laukums[x+i,j]] + v
+                for j in range(y+1, 15, 1):#Pievieno izspēlētos burtus no sākuma:
+                    if self.laukums[x+i,j]==-1:
+                        break
+                    v += burti_sim[self.laukums[x+i,j]]
+                if len(v)>1:
+                    if vārds=='LĪVJOS':
+                        print(v)
+                    # print('Perp. vārds X:', v, v in self.df.values)
+                    if not v in self.df.values:
+                        print('Neveido vārdu:', v)
+                        rezultāts = 0
+                        break
+
                 #Atrodam bonusu
                 if self.bonusi[x+i, y]==0:
                     rezultāts += burti[vārds[i]][1]
@@ -357,6 +423,25 @@ class Spēle:
                 if (self.laukums[x, y+i]!=-1) and (burti_sim[self.laukums[x, y+i]]!=vārds[i]):
                     rezultāts = 0
                     break
+                #Pārbaudām, vai horizontāli veidojas vārds:
+                v = vārds[i]
+                for j in range(x-1, -1, -1):#Pievieno izspēlētos burtus no sākuma:
+                    if self.laukums[j, y+i]==-1:
+                        break
+                    v = burti_sim[self.laukums[j, y+i]] + v
+                for j in range(x+1, 15, 1):#Pievieno izspēlētos burtus no sākuma:
+                    if self.laukums[j, y+i]==-1:
+                        break
+                    v += burti_sim[self.laukums[j, y+i]]
+                if len(v)>1:
+                    # if vārds=='LĪVJOS':
+                    #     print(v)
+                    # print('Perp. vārds Y:', v, v in self.df.values)
+                    if not v in self.df.values:
+                        print('Neveido vārdu:', v)
+                        rezultāts = 0
+                        break
+
                 #Atrodam bonusu
                 if self.bonusi[x, y+i]==0:
                     rezultāts += burti[vārds[i]][1]
@@ -370,6 +455,9 @@ class Spēle:
             raise
 
         return int(rezultāts*v_reiz)
+    def sar_vārds(self, saraksts):
+        print(saraksts)
+        return ''.join(burti_sim[i] for i in saraksts)
     def gājiens(self, roka: tuple):
         gājieni = [
             # ('TRAKO', 22, 7, 7, 'x'),
@@ -392,20 +480,9 @@ class Spēle:
                 vārdi_neder = []
                 for v in izvēles:
                     #Pārbaudām, vai vārds ir derīgs:
-                    vaicājums = requests.get(f'http://api.tezaurs.lv:8182/analyze/{v}', timeout=1000)
-                    vaicājums = vaicājums.json()
-                    for i in vaicājums:
-                        #Ja vārds ir derīgs, nav nepieciešams pārbaudīt tā nozīmes:
-                        if not (
-                            i['Vārdšķira']=='Saīsinājums' or \
-                            i['Vārdšķira']=='Reziduālis' or \
-                            ('Lietojums' in i and i['Lietojums']=='Sarunvaloda') or\
-                            ('Lietvārda tips' in i and i['Lietvārda tips']=='Īpašvārds')
-                        ):
-                            break
-                    else:
+                    if not self.vai_legāls(v):
                         vārdi_neder.append(v)
-                        print('Neder', v)
+                    
 
 
                 izvēles_p = []    
@@ -436,29 +513,23 @@ class Spēle:
                 # print(len(izvēles))
                 print('Atrod nederīgus vārdus')
                 vārdi_neder = []
-                for v in izvēles:
-                    v = v[0]
-                    #Pārbaudām, vai vārds ir derīgs:
-                    vaicājums = requests.get(f'http://api.tezaurs.lv:8182/analyze/{v}', timeout=1000)
-                    vaicājums = vaicājums.json()
-                    for i in vaicājums:
-                        #Ja vārds ir derīgs, nav nepieciešams pārbaudīt tā nozīmes:
-                        if not (
-                            i['Vārdšķira']=='Saīsinājums' or \
-                            i['Vārdšķira']=='Reziduālis' or \
-                            ('Lietojums' in i and i['Lietojums']=='Sarunvaloda') or\
-                            ('Lietvārda tips' in i and i['Lietvārda tips']=='Īpašvārds')
-                        ):
-                            break
-                    else:
-                        vārdi_neder.append(v)
-                        # print('Neder', v)
+                for v_pilns in izvēles:
+                    if not self.vai_legāls(v_pilns[0]):
+                        vārdi_neder.append(v_pilns[0])
+
+                    # print(v_pilns[-1])
+                    for v in v_pilns[-1]:
+                        if not self.vai_legāls(v[0]):
+                            vārdi_neder.append(v[0])
+
+
 
                 print('Atjauno datubāzi')
                 izvēles_p = []    
                 if vārdi_neder:
                     df = pd.read_csv('vārdi', index_col=0)
                     df = df[~ df.isin(vārdi_neder)]
+                    df.dropna(inplace=True)
                     df.to_csv('vārdi')
                     print('Datubāze atjaunota')
                     df_i = pd.DataFrame(izvēles)
@@ -487,38 +558,12 @@ class Spēle:
             izvēles_p = [gājieni[self.num_gājiena]]
         
 
-        # vārdi_neder = []
-        # j = 0
-        # for j in range(len(izvēles_p)):
-        #     #Pārbaudām, vai augtāk novērtētais vārds ir īsts:
-        #     vaicājums = requests.get(f'http://api.tezaurs.lv:8182/analyze/{izvēles_p[j][0]}', timeout=1000)
-        #     vaicājums = vaicājums.json()
-        #     for i in vaicājums:
-        #         #Ja vārds ir derīgs, nav nepieciešams pārbaudīt tā nozīmes:
-        #         if not (
-        #             i['Vārdšķira']=='Saīsinājums' or \
-        #             i['Vārdšķira']=='Reziduālis' or \
-        #             ('Lietojums' in i and i['Lietojums']=='Sarunvaloda') or\
-        #             ('Lietvārda tips' in i and i['Lietvārda tips']=='Īpašvārds')
-        #         ):
-        #             break
-        #     else:
-        #         vārdi_neder.append(izvēles_p[j][0])
-        #         print('Neder', izvēles_p[j][0])
-        #         continue
-        #     #Šeit nonākam tikai, ja vārds ir derīgs.
-        #     break
-
-        # for v in izvēles_p:
-        #     print(v)
         
         izvēles_p.sort(key=lambda x: x[1], reverse=True)
-        # for i in izvēles_p:
-        #     print(i)
 
         vārds_izsp = izvēles_p[0]
         print('Labākais vārds:', vārds_izsp)
-        #Uzzīmējam vārdu:
+        #Aprēķinām punktus un uzzīmējam vārdu:
         if vārds_izsp[-1]=='x':
             self.vārdi_izspēlēti.append(vārds_izsp[0])
             for i in range(len(vārds_izsp[0])):
@@ -600,6 +645,21 @@ class Spēle:
 
         self.num_gājiena += 1    
         self.logs.update()
+    def vai_legāls(self, vārds):
+        '''Pārbauda, vai vārdu var izspēlēt.'''
+        vaicājums = requests.get(f'http://api.tezaurs.lv:8182/analyze/{vārds}', timeout=1000)
+        vaicājums = vaicājums.json()
+        for i in vaicājums:
+            #Ja vārds ir derīgs, nav nepieciešams pārbaudīt tā nozīmes:
+            if not (
+                i['Vārdšķira']=='Saīsinājums' or \
+                i['Vārdšķira']=='Reziduālis' or \
+                ('Lietojums' in i and i['Lietojums']=='Sarunvaloda') or\
+                ('Lietvārda tips' in i and i['Lietvārda tips']=='Īpašvārds')
+            ):
+                return True
+        # print('Neder', vārds)
+        return False
 
 
 np.random.seed(0)
