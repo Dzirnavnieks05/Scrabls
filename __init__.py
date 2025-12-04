@@ -503,12 +503,12 @@ class Spēle:
                             df = df[df['Items']!=v]
                         else:
                             for x in range(8-len(v), 7+1):
-                                izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x'))
+                                izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x', []))
                     df.to_csv('vārdi')
                 else:
                     for v in izvēles:
                         for x in range(8-len(v), 7+1):
-                            izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x'))
+                            izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x', []))
                 self.vai_sākts = True
             
             else:
@@ -548,11 +548,11 @@ class Spēle:
 
                     izvēles
                     for v in izvēles:
-                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2]))
+                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
                 else:
                     for v in izvēles:
                         # print(v)
-                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2]))
+                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
                     
 
                 # # print(izvēles)
@@ -573,17 +573,26 @@ class Spēle:
 
         # vārds_izsp = izvēles_p[0]
         for v_i in izvēles_p:
+            #Vārds nevar dod 0 punktu:
             if v_i[1]==0:
                 continue
+            #Pārbauda, vai var spēlēt vārdu
             if self.vai_legāls(v_i[0]):
-                vārds_izsp = v_i
-                break
+                #Pārbaudam, vai perpendikulāri vārdi ir derīgi:
+                print('Varbūt legāls:', v_i[0])
+                for v in v_i[-1]:
+                    if not self.vai_legāls(v[0]):
+                        print('Nav legāls, jo:', v[0])
+                        break
+                else:
+                    vārds_izsp = v_i
+                    break
         else:
             print('Izlaists gājiens')
             return
         print('Labākais vārds:', vārds_izsp)
         #Aprēķinām punktus un uzzīmējam vārdu:
-        if vārds_izsp[-1]=='x':
+        if vārds_izsp[-2]=='x':
             self.vārdi_izspēlēti.append(vārds_izsp[0])
             for i in range(len(vārds_izsp[0])):
                 x_i = vārds_izsp[2]+i
@@ -622,7 +631,7 @@ class Spēle:
                     self.pieejami[x_i, vārds_izsp[3]-1] = abs(self.pieejami[x_i, vārds_izsp[3]-1])
                 if vārds_izsp[3]+1<15:
                     self.pieejami[x_i, vārds_izsp[3]+1] = abs(self.pieejami[x_i, vārds_izsp[3]+1])
-        if vārds_izsp[-1]=='y':
+        if vārds_izsp[-2]=='y':
             self.vārdi_izspēlēti.append(vārds_izsp[0])
             for i in range(len(vārds_izsp[0])):
                 y_i = vārds_izsp[3]+i
