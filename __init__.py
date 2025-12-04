@@ -418,6 +418,7 @@ class Spēle:
                 else:
                     rezultāts += burti[vārds[i]][1]*self.bonusi[x+i, y]
         elif virziens=='y':
+            burti_izsp = 0
             for i in range(len(vārds)):
                 #Burti nesakrīt
                 if (self.laukums[x, y+i]!=-1) and (burti_sim[self.laukums[x, y+i]]!=vārds[i]):
@@ -450,6 +451,15 @@ class Spēle:
                     v_reiz *= abs(self.bonusi[x, y+i])
                 else:
                     rezultāts += burti[vārds[i]][1]*self.bonusi[x, y+1]
+
+                #Vai burts nāk no rokas:
+                if self.laukums[x, y+i] == -1:
+                    burti_izsp += 1
+                #
+                if burti_izsp==0:#Nekas netiek izspēlēts
+                    rezultāts = 0
+                elif burti_izsp==7:#Bingo
+                    rezultāts += 50
         else:
             print('Nepareizs virziens')
             raise
