@@ -76,22 +76,36 @@ def izvilkt(sākt_ar):
             with open('atmesti', 'a', encoding='utf-8') as f:
                 f.write(v+'\n')
 def attīrīt():
-    df = pd.read_csv('dati')
-    df.dropna(inplace=True)
-    print(df)
-    print('Sākotnēji:', len(df))
-    #Vārdi mēdz atkārtoties:
-    df.drop_duplicates(inplace=True)
-    print('Dublikāti:', len(df))
-    #Vārdu garumiem ir ierobežojumi:
-    garumi = df['Items'].str.len()
-    df = df[(2<=garumi)*(garumi<=15)]
-    print('Garums:', len(df))
+    # df = pd.read_csv('dati')
+    # df.dropna(inplace=True)
+    # print(df)
+    # print('Sākotnēji:', len(df))
+    # #Vārdi mēdz atkārtoties:
+    # df.drop_duplicates(inplace=True)
+    # print('Dublikāti:', len(df))
+    # #Vārdu garumiem ir ierobežojumi:
+    # garumi = df['Items'].str.len()
+    # df = df[(2<=garumi)*(garumi<=15)]
+    # print('Garums:', len(df))
 
-    #Burtu skaitM ir ierobežojumi:
+    # #Burtu skaitam ir ierobežojumi:
+    # for b in burti:
+    #     df = df[df['Items'].str.count(b) <= burti[b][0]+2]#2 tukšie
+    #     print(b, len(df))
+    # df.to_csv('vārdi1')
+
+
+
+    #Daži simboli nav leksikonā:
+    df =  pd.read_csv('vārdi1', index_col=0)
+    print(len(df))
+    df[['Garums']] = 0
     for b in burti:
-        df = df[df['Items'].str.count(b) <= burti[b][0]]
-        print(b, len(df))
+        print(b)
+        df['Garums'] += df['Items'].str.count(b)
+
+    df = df[df['Items'].str.len()==df['Garums']]
+    print(len(df))
     print(df)
 
 

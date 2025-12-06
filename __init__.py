@@ -240,7 +240,9 @@ class Spēle:
                     for i in set(v_roka):
                         #1) Pārbauda, vai pietiek burtu;
                         #2) Pasaka, ka tiek izmantots burtu skaits no vārda.
-                        if i!='_':
+                        if i=='*':
+                            burti_der += v_roka.count('*')
+                        elif i!='_':
                             burti_der += (df_i['Items'].str.count(i) <= v_roka.count(i)) * df_i['Items'].str.count(i)
                     df_i = df_i[burti_der>=df_i['Items'].str.len()-1]
                     
@@ -328,7 +330,9 @@ class Spēle:
                     for i in set(v_roka):
                         #1) Pārbauda, vai pietiek burtu;
                         #2) Pasaka, ka tiek izmantots burtu skaits no vārda.
-                        if i!='_':
+                        if i=='*':
+                            burti_der += v_roka.count('*')
+                        elif i!='_':
                             burti_der += (df_i['Items'].str.count(i) <= v_roka.count(i)) * df_i['Items'].str.count(i)
                     df_i = df_i[burti_der>=df_i['Items'].str.len()-1]
 
@@ -456,17 +460,20 @@ class Spēle:
         return ''.join(burti_sim[i] for i in saraksts)
     def gājiens(self, roka: tuple):
         gājieni = [
-            # ('TRAKO', 22, 7, 7, 'x'),
-            # ('IZVĀKS', 24, (10), 3, 'y'),
-            # ('LĪVJOS', 34, (11), 3, 'y'),
-            # ('AIZVĀKSIET', 32, (10), 2, 'y'),
-            # ('NEAIZVĀKSIET', 19, (10), 0, 'y'),
-            # ('IZTEČU', 17, np.int64(7), 5, 'y'),
-            # ('ŠONAKT', 23, np.int64(9), 4, 'y'),
-            # ('VĒRTĀK', 18, np.int64(8), 5, 'y'),
-            # ('SVĒRTĀKĀ', 16, np.int64(8), 4, 'y'),
-            # ('NEATSVĒRTĀKĀ', 20, np.int64(8), 0, 'y'),
-
+            # ('TRAKO', 22, 7, 7, 'x', []),
+            # ('IZVĀKS', 24, np.int64(10), 3, 'y', []),
+            # ('VĪLIS', 28, 7, np.int64(3), 'x', []),
+            # ('AIZVĀKSIET', 32, np.int64(10), 2, 'y', []),
+            # ('NOTVER', 33, np.int64(7), 0, 'y', []),
+            # ('NEIZVĪLIS', 36, 3, np.int64(3), 'x', []),
+            # ('ČIJĀM', 43, 9, np.int64(9), 'x', []),
+            # ('KUTĒTĀ', 22, 8, np.int64(11), 'x', []),
+            # ('CIEŠS', 28, np.int64(4), 1, 'y', []),
+            # ('ĶERTA', 36, 5, np.int64(5), 'x', []),# - Šis ir iespiests starp S un V. Nešķiet pareizi
+            # ('KVASAM', 16, np.int64(13), 4, 'y', []),
+            # ('SATRAKO', 10, 5, np.int64(7), 'x', []),
+            # ('MAUCA', 24, 1, np.int64(1), 'x', []),
+            # ('HA', 21, 12, 6, 'x', [],)
         ]
         if self.num_gājiena>=len(gājieni):
             if not self.vai_sākts:
@@ -499,10 +506,12 @@ class Spēle:
             
             else:
                 izvēles = []
-                print('Atrod iespējamos vārdus')
+                print('Atrod iespējamos vārdus. Kopā jāpārbauda:', np.where(self.pieejami==1)[0].shape)
                 for x, y in zip(*np.where(self.pieejami==1)):
+                    # print('Pārbauda no', (x, y))
                     izvēles += self.pārbaudīt_vārdu(roka, x, y, 'x')
                     izvēles += self.pārbaudīt_vārdu(roka, x, y, 'y')
+                    # print('Ir')
                 vārdi_neder = []
                 # for v_pilns in izvēles:
                 #     if not self.vai_legāls(v_pilns[0]):
@@ -531,9 +540,11 @@ class Spēle:
                     for v in izvēles:
                         izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
                 else:
-                    for v in izvēles:
+                    print('Kopā jāpārbauda:', len(izvēles))
+                    for i, v in enumerate(izvēles):
                         izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
-                    
+                        if i%100==0:
+                            print(i/len(izvēles)*100, '% pārbaudīti.')
 
                 # # print(izvēles)
                 # izvēles_p = []
@@ -551,7 +562,8 @@ class Spēle:
         
         izvēles_p.sort(key=lambda x: x[1], reverse=True)
 
-        # vārds_izsp = izvēles_p[0]
+        #Atrod augstāk novērtēto vārdu, kuru var izspēlēt.
+        vārdi_neder = []
         for v_i in izvēles_p:
             #Vārds nevar dod 0 punktu:
             if v_i[1]==0:
@@ -562,14 +574,22 @@ class Spēle:
                 # print('Varbūt legāls:', v_i[0])
                 for v in v_i[-1]:
                     if not self.vai_legāls(v[0]):
-                        # print('Nav legāls, jo:', v[0])
+                        vārdi_neder.append(v[0])
                         break
                 else:
                     vārds_izsp = v_i
                     break
+            else:
+                vārdi_neder.append(v[0])
         else:
             print('Izlaists gājiens')
             return
+        print(len(vārdi_neder))
+        self.df = self.df[~self.df['Items'].isin(vārdi_neder)]
+        self.df.to_csv('vārdi')
+        with open('gājieni.txt', 'a', encoding='utf-8') as f:
+            f.write(f'{vārds_izsp}\n')
+
         print('Labākais vārds:', vārds_izsp)
         #Aprēķinām punktus un uzzīmējam vārdu:
         if vārds_izsp[-2]=='x':
@@ -593,7 +613,10 @@ class Spēle:
 
                 #No rokas izņemam izspēlētos kauliņus:
                 ind = burti_sim.index(vārds_izsp[0][i])
-                roka.pop(roka.index(ind))
+                if ind in roka:
+                    roka.pop(roka.index(ind))
+                else:
+                    roka.pop(roka.index(33))
 
                 #Dzēšam izspēlētos bonusus:
                 self.bonusi[x_i, vārds_izsp[3]] = 0
@@ -670,7 +693,8 @@ class Spēle:
         return False
 
 
-np.random.seed(0)
+# np.random.seed(0)
+np.random.seed(10)
 burti = {
     'A' : (11, 1),
     'Ā' : (4, 2), 
@@ -747,6 +771,7 @@ while True:
         izlaisti_pēc_kārtas = 0
     roka1 += izvilkt_burtus(7-len(roka1))
     roka1.sort()
+    print()
     #1. spēlētājam beigušies kauliņi
     if not roka1:
         break
@@ -760,17 +785,19 @@ while True:
         izlaisti_pēc_kārtas = 0
     roka2 += izvilkt_burtus(7-len(roka2))
     roka2.sort()
+    print()
     #2. spēlētājam beigušies kauliņi
     if not roka2:
         break
 
-    #Pēc turnīra noteikumiem, ja spēlētāji secīgi izlaiž 6 gājienus,
-    #no punktiem tiek atņemta divkāršs punktu skaits, kas ir savā rokā.
-    if izlaisti_pēc_kārtas==6:
+    #Pēc turnīra noteikumiem, ja spēlētāji secīgi izlaiž 6 gājienus, šoreiz būs divi.
+    #No punktiem tiek atņemta divkāršs punktu skaits, kas ir savā rokā.
+    if izlaisti_pēc_kārtas==2:
         for i in roka1:
-            punkti1 -= 2*burti[i][1]
+            punkti1 -= 2*burti[burti_sim[i]][1]
         for i in roka2:
-            punkti2 -= 2*burti[i][1]
+            punkti2 -= 2*burti[burti_sim[i]][1]
+        break
 
 #Ja spēlētājam beidzas kauliņi, tad spēle beidzas. Uzvarētājs
 #savāc kauliņus no pretiniekiem un gūst punktus divkāršā vērtībā.

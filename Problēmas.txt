@@ -1,0 +1,13 @@
+Labākais vārds: ('TRAKO', 22, 7, 7, 'x', [])
+Labākais vārds: ('IZVĀKS', 24, np.int64(10), 3, 'y', [])
+Labākais vārds: ('VĪLIS', 28, 7, np.int64(3), 'x', [])
+Labākais vārds: ('AIZVĀKSIET', 32, np.int64(10), 2, 'y', [])
+Labākais vārds: ('NOTVER', 33, np.int64(7), 0, 'y', [])
+Labākais vārds: ('NEIZVĪLIS', 36, 3, np.int64(3), 'x', [])
+Labākais vārds: ('ČIJĀM', 43, 9, np.int64(9), 'x', [])
+Labākais vārds: ('KUTĒTĀ', 22, 8, np.int64(11), 'x', [])
+Labākais vārds: ('CIEŠS', 28, np.int64(4), 1, 'y', [])
+Labākais vārds: ('ĶERTA', 36, 5, np.int64(5), 'x', []) - Šis ir iespiests starp S un V. Nešķiet pareizi
+Labākais vārds: ('KVASAM', 16, np.int64(13), 4, 'y', [])
+Labākais vārds: ('SATRAKO', 10, 5, np.int64(7), 'x', [])
+Labākais vārds: ('MAUCA', 24, 1, np.int64(1), 'x', [])
