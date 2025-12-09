@@ -187,24 +187,24 @@ class Spēle:
         else:
             pot_v = []
             if virziens=='x':                
-                ##Vai ievietojot burtu izvēlētajā vietā var veidoties derīgi vārdi vertikālā virzienā:
-                for b in roka:
-                    v = [int(self.laukums[x,i]) if i!=y else b for i in range(15)]
-                    for sāk in range(y-1, -1, -1):
-                        if v[sāk]==-1:
-                            sāk += 1
-                            break
-                    else:
-                        sāk = 0 #Vārds sākas pie malas
-                    for bei in range(y+1, 15, 1):
-                        if v[bei]==-1:
-                            break
-                    else:
-                        bei = 15 #Vārds beidzas pie malas
-                    v = ''.join(burti_sim[i] for i in v[sāk+1:bei])
-                    if v in df:
-                        print('Der X?', sāk, bei, v)
-                        ...
+                # ##Vai ievietojot burtu izvēlētajā vietā var veidoties derīgi vārdi vertikālā virzienā:
+                # for b in roka:
+                #     v = [int(self.laukums[x,i]) if i!=y else b for i in range(15)]
+                #     for sāk in range(y-1, -1, -1):
+                #         if v[sāk]==-1:
+                #             sāk += 1
+                #             break
+                #     else:
+                #         sāk = 0 #Vārds sākas pie malas
+                #     for bei in range(y+1, 15, 1):
+                #         if v[bei]==-1:
+                #             break
+                #     else:
+                #         bei = 15 #Vārds beidzas pie malas
+                #     v = ''.join(burti_sim[i] for i in v[sāk+1:bei])
+                #     if v in df:
+                #         print('Der X?', sāk, bei, v)
+                #         ...
 
                 ##Vai vārdu var turpināt?
                 for sāk in range(x-1, -1, -1):
@@ -218,6 +218,7 @@ class Spēle:
                         break
                 else:
                     bei = 15 #Vārds beidzas pie malas
+                
                 sāk0 = None
                 v = ''
                 for ind, i in enumerate(self.laukums[sāk+1:bei, y], sāk+1):
@@ -255,7 +256,7 @@ class Spēle:
                         v_i = v_i.replace('_', v)
 
                         #Ja iziet no laukuma robežām, izlaižam:
-                        if x_i+len(v_i)>=15:
+                        if x_i<0 or x_i+len(v_i)>=15:
                             continue
 
                         for b_i in range(len(v_i)):
@@ -309,6 +310,7 @@ class Spēle:
                         break
                 else:
                     bei = 15 #Vārds beidzas pie malas
+                #Krustotā vārda sākums. Ja 
                 sāk0 = None
                 v = ''
                 for ind, i in enumerate(self.laukums[x, sāk+1:bei], sāk+1):
@@ -316,6 +318,7 @@ class Spēle:
                         v += burti_sim[i]
                         if sāk0==None:
                             sāk0=ind
+                # print('Sāk0:', sāk0, v)
                 
                 if len(v)>0:#Ja ==1, tiek apskatīts iepriekšējā punktā.
                     df_i = df[df['Items'].str.contains(v)]#Vārdi, kuri var veidoties no pieejamajiem:
@@ -344,7 +347,7 @@ class Spēle:
                         v_i = v_i.replace('_', v)
 
                         #Ja iziet no laukuma robežām, izlaižam:
-                        if y_i+len(v_i)>=15:
+                        if y_i<0 or y_i+len(v_i)>=15:
                             continue
 
                         for b_i in range(len(v_i)):
@@ -414,6 +417,10 @@ class Spēle:
                     rezultāts += 50
         elif virziens=='y':
             for i in range(len(vārds)):
+                #Vārds sākas ārpus laukuma:
+                if x<0 or y<0:
+                    rezultāts = 0
+                    break
                 #Burti nesakrīt
                 if (self.laukums[x, y+i]!=-1) and (burti_sim[self.laukums[x, y+i]]!=vārds[i]):
                     rezultāts = 0
@@ -460,20 +467,22 @@ class Spēle:
         return ''.join(burti_sim[i] for i in saraksts)
     def gājiens(self, roka: tuple):
         gājieni = [
-            # ('TRAKO', 22, 7, 7, 'x', []),
-            # ('IZVĀKS', 24, np.int64(10), 3, 'y', []),
-            # ('VĪLIS', 28, 7, np.int64(3), 'x', []),
-            # ('AIZVĀKSIET', 32, np.int64(10), 2, 'y', []),
-            # ('NOTVER', 33, np.int64(7), 0, 'y', []),
-            # ('NEIZVĪLIS', 36, 3, np.int64(3), 'x', []),
-            # ('ČIJĀM', 43, 9, np.int64(9), 'x', []),
-            # ('KUTĒTĀ', 22, 8, np.int64(11), 'x', []),
-            # ('CIEŠS', 28, np.int64(4), 1, 'y', []),
-            # ('ĶERTA', 36, 5, np.int64(5), 'x', []),# - Šis ir iespiests starp S un V. Nešķiet pareizi
-            # ('KVASAM', 16, np.int64(13), 4, 'y', []),
-            # ('SATRAKO', 10, 5, np.int64(7), 'x', []),
-            # ('MAUCA', 24, 1, np.int64(1), 'x', []),
-            # ('HA', 21, 12, 6, 'x', [],)
+# ('ŽOGA', 34, 4, 7, 'x', []),
+# ('SĪKO', 18, np.int64(5), 4, 'y', []),
+# ('VĀCOS', 28, 1, np.int64(4), 'x', []),
+# ('ADATĀ', 16, np.int64(2), 0, 'y', []),
+# ('APZIŅU', 45, 2, np.int64(0), 'x', []),
+# ('HA', 11, 1, np.int64(2), 'x', []),
+# ('ČAKUS', 15, np.int64(7), 6, 'y', []),
+# ('SĪĻI', 26, 7, np.int64(10), 'x', []),
+# ('JĒRI', 10, np.int64(10), 7, 'y', []),
+# ('NŪJU', 14, 8, np.int64(7), 'x', []),
+# ('ATLIKI', 9, 2, np.int64(2), 'x', []),
+# ('AĻĢE', 19, np.int64(9), 9, 'y', [('MĒ', (np.int64(9), 8)), ('AR', (np.int64(9), 9)), ('MĒ', (np.int64(9), 8)), ('AR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('AR', (np.int64(9), 9)), ('AR', (np.int64(9), 9)), ('AR', (np.int64(9), 9))]),
+# ('ĀBELĒ', 19, 7, np.int64(12), 'x', []),
+# ('SĪĻIEM', 3, 7, np.int64(10), 'x', []),
+# ('ĀBELĒS', 2, 7, np.int64(12), 'x', []),
+# ('JO', 7, np.int64(4), 3, 'y', []),
         ]
         if self.num_gājiena>=len(gājieni):
             if not self.vai_sākts:
@@ -775,6 +784,12 @@ while True:
     #1. spēlētājam beigušies kauliņi
     if not roka1:
         break
+    if izlaisti_pēc_kārtas>=2:
+        for i in roka1:
+            punkti1 -= 2*burti[burti_sim[i]][1]
+        for i in roka2:
+            punkti2 -= 2*burti[burti_sim[i]][1]
+        break
 
     print('Roka2:', roka2, punkti2)
     p_i = spēle.gājiens(roka2)
@@ -792,7 +807,7 @@ while True:
 
     #Pēc turnīra noteikumiem, ja spēlētāji secīgi izlaiž 6 gājienus, šoreiz būs divi.
     #No punktiem tiek atņemta divkāršs punktu skaits, kas ir savā rokā.
-    if izlaisti_pēc_kārtas==2:
+    if izlaisti_pēc_kārtas>=2:
         for i in roka1:
             punkti1 -= 2*burti[burti_sim[i]][1]
         for i in roka2:
@@ -803,16 +818,20 @@ while True:
 #savāc kauliņus no pretiniekiem un gūst punktus divkāršā vērtībā.
 if roka1:
     for i in roka1:
-        punkti2 += 2*burti[i][1]
+        punkti2 += 2*burti[burti_sim[i]][1]
 else:
     for i in roka2:
-        punkti1 += 2*burti[i][1]
+        punkti1 += 2*burti[burti_sim[i]][1]
 print(punkti1, 'pret', punkti2)
+print('Palikušie burti:', burti_maisā_sk)
 
 # spēle.pārbaudīt_vārdu(roka2)
 print(spēle.laukums.T)
 print(spēle.pieejami.T)
+print(spēle.bonusi.T)
 
 
 print('Pārbaude strādā')
+with open('gājieni.txt', 'a') as f:
+    f.write('\n')
 spēle.mainloop()
