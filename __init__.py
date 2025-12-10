@@ -378,8 +378,8 @@ class Spēle:
         if virziens=='x':
             for i in range(len(vārds)):
                 #Burti nesakrīt
-                # Ja lauciņš ir -1: automātiski brīvs
-                # Citādi: ja nesakrīt
+                #Ja lauciņš ir -1: automātiski brīvs
+                #Citādi: ja nesakrīt
                 if (self.laukums[x+i, y]!=-1) and (burti_sim[self.laukums[x+i, y]]!=vārds[i]):
                     rezultāts = 0
                     break
