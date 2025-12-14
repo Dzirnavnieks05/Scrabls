@@ -380,10 +380,14 @@ class Spēle:
                 #Burti nesakrīt
                 #Ja lauciņš ir -1: automātiski brīvs
                 #Citādi: ja nesakrīt
+                # if vārds=='APZIŅU':
+                #     print('No "APZIŅU":', self.laukums[x+i, y], burti_sim[self.laukums[x+i, y]], vārds[i])
                 if (self.laukums[x+i, y]!=-1) and (burti_sim[self.laukums[x+i, y]]!=vārds[i]):
                     rezultāts = 0
+                    # if vārds=='APZIŅU':
+                    #     print(burti_sim[self.laukums[x+i, y]], vārds[i])
                     break
-                #Pārbaudām, vai vertikāli veidojas vārds:
+                #Pārbaudām, vai perpendikulāri veidojas vārds:
                 v = vārds[i]
                 for j in range(y-1, -1, -1):#Pievieno izspēlētos burtus no sākuma:
                     if self.laukums[x+i,j]==-1:
@@ -399,6 +403,7 @@ class Spēle:
                         break
 
                 #Atrodam bonusu
+                # if not vārds in ('APZIŅU', 'AI'):
                 if self.bonusi[x+i, y]==0:
                     rezultāts += burti[vārds[i]][1]
                 elif self.bonusi[x+i, y]<=0:
@@ -406,15 +411,42 @@ class Spēle:
                     v_reiz *= abs(self.bonusi[x+i, y])
                 else:
                     rezultāts += burti[vārds[i]][1]*self.bonusi[x+i, y]
+                # else:
+                #     # print(self.bonusi[x+i, y])
+                #     if self.bonusi[x+i, y]==0:
+                #         rezultāts += burti[vārds[i]][1]
+                #         print('Nav bonusa')
+                #         print(vārds[i], burti[vārds[i]][1])
+                #         print('Rezultāts:', rezultāts)
+                #         print('v_reiz:', v_reiz)
+                #     elif self.bonusi[x+i, y]<=0:
+                #         rezultāts += burti[vārds[i]][1]
+                #         v_reiz *= abs(self.bonusi[x+i, y])
+                #         print('Vārda bonuss:')
+                #         print(vārds[i], burti[vārds[i]][1])
+                #         print('Rezultāts:', rezultāts)
+                #         print('v_reiz:', v_reiz)
+
+                #         # print('Vārda bonuss:', vārds[i], burti[vārds[i]][1], rezultāts, v_reiz)
+                #     else:
+                #         print('Rezultāts pirms:', rezultāts)
+                #         rezultāts += burti[vārds[i]][1]*self.bonusi[x+i, y]
+                #         # print('Burta bonuss:', vārds[i], burti[vārds[i]][1], rezultāts, v_reiz)
+                #         print('Burta bonuss:')
+                #         print(vārds[i], burti[vārds[i]][1], '->', burti[vārds[i]][1]*self.bonusi[x+i, y])
+                #         print('Rezultāts:', rezultāts)
+                #         print('v_reiz:', v_reiz)
+
+                #     input()
 
                 #Vai burts nāk no rokas:
                 if self.laukums[x+i, y] == -1:
                     burti_izsp += 1
 
-                if burti_izsp==0:#Nekas netiek izspēlēts
-                    rezultāts = 0
-                elif burti_izsp==7:#Bingo
-                    rezultāts += 50
+            if burti_izsp==0:#Nekas netiek izspēlēts
+                rezultāts = 0
+            elif burti_izsp==7:#Bingo
+                rezultāts += 50
         elif virziens=='y':
             for i in range(len(vārds)):
                 #Vārds sākas ārpus laukuma:
@@ -453,10 +485,10 @@ class Spēle:
                 if self.laukums[x, y+i] == -1:
                     burti_izsp += 1
 
-                if burti_izsp==0:#Nekas netiek izspēlēts
-                    rezultāts = 0
-                elif burti_izsp==7:#Bingo
-                    rezultāts += 50
+            if burti_izsp==0:#Nekas netiek izspēlēts
+                rezultāts = 0
+            elif burti_izsp==7:#Bingo
+                rezultāts += 50
         else:
             print('Nepareizs virziens')
             raise
@@ -471,25 +503,37 @@ class Spēle:
 # ('SĪKO', 18, np.int64(5), 4, 'y', []),
 # ('VĀCOS', 28, 1, np.int64(4), 'x', []),
 # ('ADATĀ', 16, np.int64(2), 0, 'y', []),
-# ('APZIŅU', 45, 2, np.int64(0), 'x', []),
-# ('HA', 11, 1, np.int64(2), 'x', []),
+# ('APZIŅU', 48, 2, np.int64(0), 'x', []),
+# ('AI', 2, 2, np.int64(2), 'x', []),
 # ('ČAKUS', 15, np.int64(7), 6, 'y', []),
-# ('SĪĻI', 26, 7, np.int64(10), 'x', []),
-# ('JĒRI', 10, np.int64(10), 7, 'y', []),
-# ('NŪJU', 14, 8, np.int64(7), 'x', []),
-# ('ATLIKI', 9, 2, np.int64(2), 'x', []),
-# ('AĻĢE', 19, np.int64(9), 9, 'y', [('MĒ', (np.int64(9), 8)), ('AR', (np.int64(9), 9)), ('MĒ', (np.int64(9), 8)), ('AR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('IR', (np.int64(9), 9)), ('AR', (np.int64(9), 9)), ('AR', (np.int64(9), 9)), ('AR', (np.int64(9), 9))]),
-# ('ĀBELĒ', 19, 7, np.int64(12), 'x', []),
-# ('SĪĻIEM', 3, 7, np.int64(10), 'x', []),
-# ('ĀBELĒS', 2, 7, np.int64(12), 'x', []),
-# ('JO', 7, np.int64(4), 3, 'y', []),
+# -1,
+# ('RITĒJIS', 26, 1, np.int64(10), 'x', []),
+# ('DĒĻ', 15, np.int64(4), 9, 'y', []),
+# ('RIBĀ', 18, np.int64(1), 10, 'y', []),
+# ('NAIDĀ', 9, 1, np.int64(2), 'x', []),
+# ('ČAKLU', 17, 7, np.int64(6), 'x', []),
+# ('MĪLĒ', 24, np.int64(10), 4, 'y', []),
+# ('DĒĻI', 16, np.int64(4), 9, 'y', []),
+# ('ČAKLUS', 18, 7, np.int64(6), 'x', []),
+# ('PRĀVS', 18, np.int64(12), 2, 'y', []),
+# ('MĪLĒJAMS', 40, np.int64(10), 4, 'y', []),
+# ('ALISE', 14, 2, np.int64(12), 'x', []),
+# ('JŪS', 12, 10, np.int64(8), 'x', []),
+# ('NEMĪLĒJAMS', 23, np.int64(10), 2, 'y', []),
+# ('VIES', 12, 8, np.int64(3), 'x', []),
+# ('JŪSU', 12, 10, np.int64(8), 'x', []),
+# ('ADATĀM', 10, np.int64(2), 0, 'y', []),
+# ('LEMT', 6, 8, np.int64(10), 'x', []),
+# ('SĪKOS', 11, np.int64(5), 4, 'y', []),
+# ('ALISEI', 7, 2, np.int64(12), 'x', []),
+# ('TĀ', 2, np.int64(5), 1, 'y', []),
         ]
         if self.num_gājiena>=len(gājieni):
             if not self.vai_sākts:
                 
                 izvēles = self.pārbaudīt_vārdu(roka)
                 
-                vārdi_neder = []
+                # vārdi_neder = []
                 # for v in izvēles:
                 #     #Pārbaudām, vai vārds ir derīgs:
                 #     if not self.vai_legāls(v):
@@ -498,19 +542,9 @@ class Spēle:
 
 
                 izvēles_p = []    
-                if vārdi_neder:
-                    df = pd.read_csv('vārdi', index_col=0)
-                    for v in izvēles:
-                        if v in vārdi_neder:
-                            df = df[df['Items']!=v]
-                        else:
-                            for x in range(8-len(v), 7+1):
-                                izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x', []))
-                    df.to_csv('vārdi')
-                else:
-                    for v in izvēles:
-                        for x in range(8-len(v), 7+1):
-                            izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x', []))
+                for v in izvēles:
+                    for x in range(8-len(v), 7+1):
+                        izvēles_p.append((v, self.pārbaudīt_punktus(v, x, 7, ), x, 7, 'x', []))
                 self.vai_sākts = True
             
             else:
@@ -521,7 +555,7 @@ class Spēle:
                     izvēles += self.pārbaudīt_vārdu(roka, x, y, 'x')
                     izvēles += self.pārbaudīt_vārdu(roka, x, y, 'y')
                     # print('Ir')
-                vārdi_neder = []
+                # vārdi_neder = []
                 # for v_pilns in izvēles:
                 #     if not self.vai_legāls(v_pilns[0]):
                 #         vārdi_neder.append(v_pilns[0])
@@ -535,25 +569,11 @@ class Spēle:
 
                 # print('Atjauno datubāzi')
                 izvēles_p = []    
-                if vārdi_neder:
-                    df = pd.read_csv('vārdi', index_col=0)
-                    df = df[~ df.isin(vārdi_neder)]
-                    df.dropna(inplace=True)
-                    df.to_csv('vārdi')
-                    print('Datubāze atjaunota')
-                    df_i = pd.DataFrame(izvēles)
-                    # print(df_i)
-
-
-                    izvēles
-                    for v in izvēles:
-                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
-                else:
-                    print('Kopā jāpārbauda:', len(izvēles))
-                    for i, v in enumerate(izvēles):
-                        izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
-                        if i%100==0:
-                            print(i/len(izvēles)*100, '% pārbaudīti.')
+                print('Kopā jāpārbauda:', len(izvēles))
+                for i, v in enumerate(izvēles):
+                    izvēles_p.append((v[0], self.pārbaudīt_punktus(v[0], *v[1], v[2]), *v[1], v[2], v[3]))
+                    if i%100==0:
+                        print(i/len(izvēles)*100, '% pārbaudīti.')
 
                 # # print(izvēles)
                 # izvēles_p = []
@@ -568,12 +588,16 @@ class Spēle:
             izvēles_p = [gājieni[self.num_gājiena]]
         
 
-        
+        # if izvēles_p[0]!=-1:
         izvēles_p.sort(key=lambda x: x[1], reverse=True)
 
         #Atrod augstāk novērtēto vārdu, kuru var izspēlēt.
         vārdi_neder = []
         for v_i in izvēles_p:
+            # #Atkārto izlaistu gājienu:
+            # if v_i==-1:
+            #     continue
+
             #Vārds nevar dod 0 punktu:
             if v_i[1]==0:
                 continue
@@ -589,15 +613,20 @@ class Spēle:
                     vārds_izsp = v_i
                     break
             else:
-                vārdi_neder.append(v[0])
+                vārdi_neder.append(v_i[0])
         else:
             print('Izlaists gājiens')
+            with open('gājieni.txt', 'a', encoding='utf-8') as f:
+                f.write(f'-1,\n')
+
             return
-        print(len(vārdi_neder))
+        print('Vārdi neder:', len(vārdi_neder))
+        for i in vārdi_neder:
+            print('-', i)
         self.df = self.df[~self.df['Items'].isin(vārdi_neder)]
         self.df.to_csv('vārdi')
         with open('gājieni.txt', 'a', encoding='utf-8') as f:
-            f.write(f'{vārds_izsp}\n')
+            f.write(f'{vārds_izsp},\n')
 
         print('Labākais vārds:', vārds_izsp)
         #Aprēķinām punktus un uzzīmējam vārdu:
@@ -665,6 +694,7 @@ class Spēle:
                 #No rokas izņemam izspēlētos kauliņus:
                 ind = burti_sim.index(vārds_izsp[0][i])
                 roka.pop(roka.index(ind))
+                #not in list 27:
 
                 #Dzēšam izspēlētos bonusus:
                 self.bonusi[vārds_izsp[2], y_i] = 0
@@ -703,7 +733,7 @@ class Spēle:
 
 
 # np.random.seed(0)
-np.random.seed(10)
+r_stāv = np.random.RandomState(10)
 burti = {
     'A' : (11, 1),
     'Ā' : (4, 2), 
@@ -753,7 +783,7 @@ def izvilkt_burtus(N=7):
     '''No maisa izvelk N burtus'''
     izvilkts = []
     for n in range(N):
-        ind = np.random.randint(0, np.sum(burti_maisā_sk)-1)
+        ind = r_stāv.randint(0, np.sum(burti_maisā_sk)-1)
         ind_burts = np.where(ind<np.cumsum(burti_maisā_sk))[-1][0]
         izvilkts.append(int(ind_burts))
         burti_maisā_sk[ind_burts] -= 1 #Izvelkam burtu
