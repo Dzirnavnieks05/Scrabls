@@ -380,7 +380,7 @@ class Spēle:
             # Ja saskartos, tad veidotos lielāks vārds.
             if x!=0 and self.laukums[x-1, y]!=-1:
                 return 0
-            elif x+len(vārds)>=15 and self.laukums[x+len(vārds), y]!=-1:
+            elif x+len(vārds)<=15 and self.laukums[x+len(vārds), y]!=-1:
                 return 0
             
             for i in range(len(vārds)):
@@ -459,7 +459,7 @@ class Spēle:
             # Ja saskartos, tad veidotos lielāks vārds.
             if y!=0 and self.laukums[x, y-1]!=-1:
                 return 0
-            elif y+len(vārds)>=15 and self.laukums[x, y+len(vārds)]!=-1:
+            elif y+len(vārds)<=15 and self.laukums[x, y+len(vārds)]!=-1:
                 return 0
 
             for i in range(len(vārds)):
@@ -517,13 +517,17 @@ class Spēle:
 ('HADĪSA', 40, np.int64(4), 6, 'y', []),
 ('VAICĀTO', 36, 3, np.int64(11), 'x', []),
 ('PŪŽŅA', 35, np.int64(6), 5, 'y', []),
-# ('DARĪJI', 28, 5, np.int64(9), 'x', []),
-# ('UZVAICĀTOS', 21, 1, np.int64(11), 'x', []),
-# ('DĒĻU', 24, np.int64(1), 8, 'y', []),
-# ('BUDĒĻU', 22, np.int64(1), 6, 'y', []),
-# ('AUŽOT', 14, 4, np.int64(7), 'x', []),
-# ('TĀ', 5, np.int64(8), 11, 'y', []),
-# ('SĀK', 5, np.int64(10), 11, 'y', []),
+('TIRDĪJA', 25, 0, np.int64(9), 'x', []),
+('ČUKST', 45, np.int64(0), 5, 'y', []),
+('ČUKSTI', 16, np.int64(0), 5, 'y', []),
+('UZVAICĀTO', 20, 1, np.int64(11), 'x', []),
+('ZĪD', 20, np.int64(2), 11, 'y', []),
+('BĀLO', 16, np.int64(9), 8, 'y', []),
+('ĒDĒ', 22, 1, np.int64(13), 'x', []),
+('HADĪSAM', 22, np.int64(4), 6, 'y', []),
+('IEČUKSTI', 17, np.int64(0), 3, 'y', []),
+('VĀĢA', 16, 8, np.int64(9), 'x', []),
+('IEAIJĀ', 18, np.int64(11), 7, 'y', []),
         ]
         if self.num_gājiena>=len(gājieni):
             if not self.vai_sākts:
@@ -860,10 +864,9 @@ else:
 print(punkti1, 'pret', punkti2)
 print('Palikušie burti:', burti_maisā_sk)
 
-# spēle.pārbaudīt_vārdu(roka2)
-print(spēle.laukums.T)
-print(spēle.pieejami.T)
-print(spēle.bonusi.T)
+# print(spēle.laukums.T)
+# print(spēle.pieejami.T)
+# print(spēle.bonusi.T)
 
 
 print('Pārbaude strādā')
