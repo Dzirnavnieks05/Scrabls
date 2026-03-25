@@ -513,21 +513,6 @@ class Spēle:
         return ''.join(burti_sim[i] for i in saraksts)
     def gājiens(self, roka: tuple):
         gājieni = [
-('GAUŽO', 46, 3, 7, 'x', []),
-('HADĪSA', 40, np.int64(4), 6, 'y', []),
-('VAICĀTO', 36, 3, np.int64(11), 'x', []),
-('PŪŽŅA', 35, np.int64(6), 5, 'y', []),
-('TIRDĪJA', 25, 0, np.int64(9), 'x', []),
-('ČUKST', 45, np.int64(0), 5, 'y', []),
-('ČUKSTI', 16, np.int64(0), 5, 'y', []),
-('UZVAICĀTO', 20, 1, np.int64(11), 'x', []),
-('ZĪD', 20, np.int64(2), 11, 'y', []),
-('BĀLO', 16, np.int64(9), 8, 'y', []),
-('ĒDĒ', 22, 1, np.int64(13), 'x', []),
-('HADĪSAM', 22, np.int64(4), 6, 'y', []),
-('IEČUKSTI', 17, np.int64(0), 3, 'y', []),
-('VĀĢA', 16, 8, np.int64(9), 'x', []),
-('IEAIJĀ', 18, np.int64(11), 7, 'y', []),
         ]
         if self.num_gājiena>=len(gājieni):
             if not self.vai_sākts:
@@ -552,9 +537,12 @@ class Spēle:
                 izvēles = []
                 print('Atrod iespējamos vārdus. Lauciņi jāpārbauda:', np.where(self.pieejami==1)[0].shape)
                 for x, y in zip(*np.where(self.pieejami==1)):
-                    # print('Pārbauda no', (x, y))
-                    izvēles += self.pārbaudīt_vārdu(roka, x, y, 'x')
-                    izvēles += self.pārbaudīt_vārdu(roka, x, y, 'y')
+                    izvēles_xy = self.pārbaudīt_vārdu(roka, x, y, 'x') \
+                                + self.pārbaudīt_vārdu(roka, x, y, 'y')
+                    if izvēles_xy:
+                        izvēles += izvēles_xy
+                    else:
+                        self.pieejami[x, y] = 0
                     # print('Ir')
                 # vārdi_neder = []
                 # for v_pilns in izvēles:
@@ -590,6 +578,13 @@ class Spēle:
         else:
             self.vai_sākts = True
             izvēles_p = [gājieni[self.num_gājiena]]
+
+            if gājieni[self.num_gājiena]==-1:
+                with open('gājieni.txt', 'a', encoding='utf-8') as f:
+                    f.write(f'-1,\n')
+                self.num_gājiena += 1
+                return
+
         
 
         # if izvēles_p[0]!=-1:
@@ -699,7 +694,11 @@ class Spēle:
 
                 #No rokas izņemam izspēlētos kauliņus:
                 ind = burti_sim.index(vārds_izsp[0][i])
-                roka.pop(roka.index(ind))
+                if ind in roka:
+                    roka.pop(roka.index(ind))
+                else:
+                    roka.pop(roka.index(33))
+
                 #not in list 27:
 
                 #Dzēšam izspēlētos bonusus:
@@ -739,9 +738,13 @@ class Spēle:
 
 
 # np.random.seed(0)
-r_stāv = np.random.RandomState(10)
+
+r_seed = np.random.randint(0, 2**31-1)
+# r_seed = 980369453
+# r_stāv = np.random.RandomState()
+r_stāv = np.random.RandomState(r_seed)
 with open('gājieni.txt', 'a') as f:
-    f.write(f'Seed: {10}\n')
+    f.write(f'Seed: {r_seed}\n')
 
 burti = {
     'A' : (11, 1),
@@ -862,6 +865,8 @@ else:
     for i in roka2:
         punkti1 += 2*burti[burti_sim[i]][1]
 print(punkti1, 'pret', punkti2)
+print('Roka1:', roka1)
+print('Roka2:', roka2)
 print('Palikušie burti:', burti_maisā_sk)
 
 # print(spēle.laukums.T)
